@@ -63,4 +63,28 @@ extension CategoriesViewController: UITableViewDataSource, UITableViewDelegate {
             }
             destination.category = catagories[selectedRow]
         }
+    func deleteCatagory(at indexPath: IndexPath){
+        let category = catagories[indexPath.row]
+        guard let managedContext = category.managedObjectContext else {
+            return
+        }
+        managedContext.delete(category)
+        
+        do{
+            try managedContext.save()
+            
+            catagories.remove(at: indexPath.row)
+            categoriesTableView.deleteRows(at: [indexPath], with: .automatic)
+            
+        }catch{
+            print("Could not delete")
+            categoriesTableView.reloadRows(at: [indexPath], with: .automatic)
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete{
+            deleteCatagory(at: indexPath)
+        }
+    }
 }
