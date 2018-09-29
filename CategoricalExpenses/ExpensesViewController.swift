@@ -14,12 +14,18 @@ class ExpensesViewController: UIViewController {
     
     let dateFormatter = DateFormatter()
     
+    var category: Catagories?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         dateFormatter.timeStyle = .long
         dateFormatter.dateStyle = .long
 
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        self.expensesTableView.reloadData()
     }
 
     override func didReceiveMemoryWarning() {
@@ -34,11 +40,17 @@ class ExpensesViewController: UIViewController {
 
 extension ExpensesViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 0
+        return category?.expenses?.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = expensesTableView.dequeueReusableCell(withIdentifier: "expenseCell", for: indexPath)
+        if let expense = category?.expenses?[indexPath.row]{
+            cell.textLabel?.text = expense.name
+            if let date = expense.date{
+                cell.detailTextLabel?.text = dateFormatter.string(from: date)
+            }
+        }
         
         return cell
     }
@@ -48,6 +60,8 @@ extension ExpensesViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         performSegue(withIdentifier: "showExpense", sender: self)
     }
+    
+
 }
 
 
